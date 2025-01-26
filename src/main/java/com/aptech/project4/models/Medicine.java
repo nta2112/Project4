@@ -1,10 +1,12 @@
 package com.aptech.project4.models;
 
-import java.util.*;
+// import java.util.*;
 
 import jakarta.persistence.*;
+
 @Entity
-@Table(name = "thuoc")
+// Bảng thuốc
+@Table(name = "medicines")
 public class Medicine {
 
     @Id
@@ -15,4 +17,27 @@ public class Medicine {
     private Double price;
 
     // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 }

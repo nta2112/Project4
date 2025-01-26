@@ -1,10 +1,11 @@
 package com.aptech.project4.models;
 
-import java.util.*;
+// import java.util.*;
 
 import jakarta.persistence.*;
 
 @Entity
+// Bảng tiểu sử bệnh
 @Table(name = "disease_histories")
 public class DiseaseHistory {
 
@@ -19,4 +20,27 @@ public class DiseaseHistory {
     private String description;
 
     // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
