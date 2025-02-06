@@ -112,10 +112,6 @@
     font-size: 1.7rem;
 }
 
-
-/* ////////////////// */
-
-
 #menu-toggle:checked ~ .sidebar {
     width: 60px;
 }
@@ -411,6 +407,49 @@ table tbody tr {
     border-bottom: 1px solid #dee2e8;
 }
 
+.btn-action{
+    border: none;
+    cursor: pointer;
+    font-size: .9rem;
+    padding: 10px;
+}
+
+.btn-action:hover{
+    background-color: #ccc;
+}
+
+.btn-delete{
+    color: red;
+}
+
+.btn-edit{
+    color: #22baa0;
+}
+
+.pagination{
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.pagination button{
+    padding: 10px;
+    margin: 0 5px;
+    font-weight: bold;
+    border: 1px solid #b0b0b0;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.pagination span{
+    padding: 10px;
+    margin: 0 5px;
+    border: 1px solid #b0b0b0;
+    background-color: #fff;
+}
+
 .client {
     display: flex;
     align-items: center;
@@ -448,7 +487,18 @@ table tbody tr {
     border-radius: 20px;
     font-size: .8rem;
 }
-
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 5;
+}
 .form_tool{
     background-color: #fff;
     position: fixed;
@@ -457,6 +507,13 @@ table tbody tr {
     transform: translate(-50%, -50%); 
     border: 1px solid #a8a8a8;
     display: none;
+    width: 500px;
+    z-index: 10;
+}
+
+.form_tool form{
+    width: 100%;
+    height: 100%;
 }
 
 
@@ -478,22 +535,90 @@ table tbody tr {
 
 .form_tool .form_tool_main .form_tool_content{
     padding: 10px;
-    display: flex;
-    gap: 20px;
+    /* padding-bottom: 50px; */
 }
 
 .form_tool_content .form_tool_list{
     font-size: 1rem;
+    display: flex;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.form_tool_list .form_tool_card{
+    width: 50%;
 }
 
 .form_tool_content .form_tool_list input{
-    width: 200px;
-    height: 40px;
+    width: 100%;
     padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form_tool_content .form_tool_select{
+    width: 100%;
     font-size: 1rem;
     border-radius: 5px;
     margin-top: 20px;
 }
+
+.form_tool_content .input-group{
+    margin-top: 20px;
+}
+
+.form_tool_content .searchInput {
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.form_tool_content .searchInput_option {
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    user-select: none;
+    
+}
+
+.form_tool_content .form_input{
+    width: 100%;
+    display: flex;
+}
+
+.form_tool_content .dropdown {
+    position: absolute;
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: none;
+    background-color: #fff;
+    height: 120px;
+}
+
+.form_tool_content .dropdown option{
+    padding: 10px;
+    border-radius: 5px;
+    display: block;
+    width: 100%;
+    cursor: pointer;
+}
+
+.form_tool_content .dropdown option:hover{
+    background-color: #ccc;
+}
+
+
+
+
+
+
+
+
+
 
 .form_tool_btn{
     width: 100%;

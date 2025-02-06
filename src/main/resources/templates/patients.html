@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <link rel="stylesheet" href="css/patients.css">
+</head>
+
+<body>
+    <main layout:fragment="content">
+
+        <div class="page-header">
+            <h1>Quản lý bệnh nhân</h1>
+            <small>Home / Dashboard</small>
+        </div>
+
+        <div class="page-content">
+
+
+            <div class="records table-responsive">
+
+                <div class="record-header">
+                    <div class="add">
+                        <span>Entries</span>
+                        <select name="" id="">
+                            <option value="">ID</option>
+                        </select>
+                        <button id="open_form">Thêm bệnh nhân</button>
+                    </div>
+
+                    <div class="browse">
+                        <input type="search" placeholder="Search" class="record-search">
+                        <select name="" id="">
+                            <option value="">Status</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <table width="100%" id="clientTable">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Họ tên</th>
+                                <th>Địa chỉ</th>
+                                <th>ngày sinh</th>
+                                <th>Email</th>
+                                <th>Giới tính</th>
+                                <th>Số điện thoại</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="patient : ${patients}">
+                                <td th:text="${patient.id}"></td>
+                                <td>
+                                    <div class="client">
+                                        <div class="client-info">
+                                            <h4 th:text="${patient.fullName}"></h4>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${patient.address}"></td>
+                                <td th:text="${patient.dob}"></td>
+                                <td th:text="${patient.email}"></td>
+                                <td th:text="${patient.gender}"></td>
+                                <td th:text="${patient.phone}"></td>
+
+                                <td>
+                                    <div class="actions">
+                                        <button class="btn-action btn-delete" th:data-id="${patient.id}"><i
+                                                class="fa-solid fa-trash"></i></button>
+                                        <button class="btn-action btn-edit" th:data-id="${patient.id}"
+                                            th:onclick="openEditForm([[${patient.id}]])"><i
+                                                class="fa-solid fa-pen"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button id="prevBtn" class="disabled"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="pageNumber" class="page-number">Page 1</span>
+                    <button id="nextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+
+            </div>
+
+            <div id="overlay"></div>
+            <!-- ADD -->
+            <div class="form_tool" id="formTool">
+                <div class="form_tool_main" id="formToolHeader">
+                    <div class="form_tool_name">
+                        <p>Thêm Bệnh Nhân</p>
+                        <button id="closeButton">X</button>
+                    </div>
+                    <div class="form_tool_content">
+                        <form id="patientForm">
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Họ và tên</p>
+                                    <input type="text" name="fullName" id="fullName">
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Số điện thoại</p>
+                                    <input type="text" name="phone" id="phone">
+                                </div>
+                            </div>
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Email</p>
+                                    <input type="email" name="email" id="email">
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Địa chỉ</p>
+                                    <input type="text" name="address" id="address">
+                                </div>
+                            </div>
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Ngày sinh</p>
+                                    <input type="date" name="dob" id="dob">
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Giới tính</p>
+                                    <select name="gender" id="gender">
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form_tool_btn">
+                                <button type="submit">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit -->
+            <div class="form_tool" id="formTool-edit">
+                <div class="form_tool_main" id="formToolHeader-edit">
+                    <div class="form_tool_name">
+                        <p>Chỉnh sửa Bệnh Nhân</p>
+                        <button id="closeButtonedit">X</button>
+                    </div>
+                    <div class="form_tool_content">
+                        <form id="medicineEditForm">
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Mã bệnh nhân</p>
+                                    <input type="text" name="id" id="editId" placeholder="111" disabled>
+                                </div>
+                            </div>
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Họ và tên</p>
+                                    <input type="text" name="fullName" id="editFullName">
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Số điện thoại</p>
+                                    <input type="text" name="phone" id="editPhone">
+                                </div>
+                            </div>
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Email</p>
+                                    <input type="email" name="email" id="editEmail">
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Địa chỉ</p>
+                                    <input type="text" name="address" id="editAddress">
+                                </div>
+                            </div>
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Ngày sinh</p>
+                                    <input type="date" name="dob" id="editDob">
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Giới tính</p>
+                                    <select name="gender" id="editGender">
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form_tool_btn">
+                                <button type="submit">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="js/patients.js"></script>
+        <script>
+            $(document).ready(function () {
+                const itemsPerPage = 6;
+                let currentPage = 1;
+                const totalRows = $('#clientTable tbody tr').length;
+                const totalPages = Math.ceil(totalRows / itemsPerPage);
+
+                function renderTable() {
+                    const tableRows = $('#clientTable tbody tr');
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+
+                    tableRows.hide().slice(start, end).show();
+
+                    // Hiển thị số trang
+                    $('#pageNumber').text(`Page ${currentPage} of ${totalPages}`);
+
+                    // Kiểm tra và hiển thị/ẩn nút phân trang
+                    $('#prevBtn').toggleClass('disabled', currentPage === 1);
+                    $('#nextBtn').toggleClass('disabled', currentPage * itemsPerPage >= totalRows);
+                }
+
+                // Xử lý sự kiện phân trang
+                $('#prevBtn').click(function () {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderTable();
+                    }
+                });
+
+                $('#nextBtn').click(function () {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderTable();
+                    }
+                });
+
+                // Lần đầu hiển thị bảng
+                renderTable();
+            });
+        </script>
+
+        <!-- Thêm -->
+        <script>
+            $(document).ready(function () {
+                $("#patientForm").submit(function (e) {
+                    e.preventDefault();
+
+                    var fullName = $("#fullName").val().trim();
+                    var phone = $("#phone").val().trim();
+                    var email = $("#email").val().trim();
+                    var address = $("#address").val().trim();
+                    var dob = $("#dob").val();
+                    var gender = $("#gender").val();
+
+                    if (fullName === "") {
+                        alert("Họ và tên không được để trống!");
+                        return;
+                    }
+
+                    if (phone === "" || !/^\d{10}$/.test(phone)) {
+                        alert("Số điện thoại không hợp lệ! (Phải có 10 chữ số)");
+                        return;
+                    }
+
+                    if (email === "" || !/^\S+@\S+\.\S+$/.test(email)) {
+                        alert("Email không hợp lệ!");
+                        return;
+                    }
+
+                    if (address === "") {
+                        alert("Địa chỉ không được để trống!");
+                        return;
+                    }
+
+                    if (dob === "") {
+                        alert("Vui lòng chọn ngày sinh!");
+                        return;
+                    }
+
+                    var patientData = {
+                        fullName: fullName,
+                        phone: phone,
+                        email: email,
+                        address: address,
+                        dob: dob,
+                        gender: gender
+                    };
+
+                    $.ajax({
+                        url: '/patients/create',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(patientData),
+                        success: function (response) {
+                            alert('Thêm bệnh nhân thành công!');
+                            location.reload();
+                        },
+                        error: function (error) {
+                            alert('Có lỗi xảy ra! Vui lòng thử lại.');
+                        }
+                    });
+                });
+            });
+        </script>
+
+        <!-- Xóa -->
+        <script>
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function () {
+                    const patientId = this.getAttribute('data-id');
+                    if (confirm('Bạn có chắc chắn muốn xóa thuốc này?')) {
+                        fetch(`/patient/delete/${patientId}`, {
+                            method: 'DELETE',
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('Bệnh nhân đã được xóa!');
+                                    location.reload();
+                                } else {
+                                    alert('Xóa Bệnh nhân thất bại!');
+                                }
+                            })
+                            .catch(error => {
+                                alert('Có lỗi xảy ra!');
+                            });
+                    }
+                });
+            });
+        </script>
+
+        <!-- Sửa -->
+        <script>
+            function openEditForm(patientId) {
+                $.ajax({
+                    url: '/patient/' + patientId,
+                    type: 'GET',
+                    success: function (data) {
+                        $("#editId").val(data.id);
+                        $("#editFullName").val(data.fullName);
+                        $("#editPhone").val(data.phone);
+                        $("#editEmail").val(data.email);
+                        $("#editAddress").val(data.address);
+                        $("#editDob").val(data.dob);
+                        $("#editGender").val(data.gender);
+
+                    },
+                    error: function () {
+                        alert("Không tìm thấy bệnh nhân!");
+                    }
+                });
+            }
+        </script>
+
+        <!-- Cập nhật -->
+        <script>
+            $(document).ready(function () {
+                $("#medicineEditForm").submit(function (e) {
+                    e.preventDefault();
+
+                    var patientId = $("#editId").val();
+                    var fullName = $("#editFullName").val();
+                    var phone = $("#editPhone").val();
+                    var email = $("#editEmail").val();
+                    var address = $("#editAddress").val();
+                    var dob = $("#editDob").val();
+                    var gender = $("#editGender").val();
+
+                    if (fullName === "") {
+                        alert("Họ và tên không được để trống!");
+                        return;
+                    }
+
+                    if (phone === "" || !/^\d{10}$/.test(phone)) {
+                        alert("Số điện thoại không hợp lệ! (Phải có 10 chữ số)");
+                        return;
+                    }
+
+                    if (email === "" || !/^\S+@\S+\.\S+$/.test(email)) {
+                        alert("Email không hợp lệ!");
+                        return;
+                    }
+
+                    if (address === "") {
+                        alert("Địa chỉ không được để trống!");
+                        return;
+                    }
+
+                    if (dob === "") {
+                        alert("Vui lòng chọn ngày sinh!");
+                        return;
+                    }
+
+                    var patientData = {
+                        id: patientId,
+                        fullName: fullName,
+                        phone: phone,
+                        email: email,
+                        address: address,
+                        dob: dob,
+                        gender: gender
+                    };
+
+                    $.ajax({
+                        url: '/patient/update/' + patientId,
+                        type: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(patientData),
+                        success: function () {
+                            alert("Cập nhật thành công!");
+                            location.reload();
+                        },
+                        error: function () {
+                            alert("Có lỗi xảy ra!");
+                        }
+                    });
+                });
+            });
+        </script>
+
+
+    </main>
+
+</body>
+
+</html>

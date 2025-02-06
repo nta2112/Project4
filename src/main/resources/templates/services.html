@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <link rel="stylesheet" href="css/services.css">
+</head>
+
+<body>
+    <main layout:fragment="content">
+        <div class="page-header">
+            <h1>Quản dịch vụ</h1>
+            <small>Home / Dashboard</small>
+        </div>
+
+        <div class="page-content">
+            <div class="records table-responsive">
+                <div class="record-header">
+                    <div class="add">
+                        <span>Entries</span>
+                        <select name="" id="">
+                            <option value="">ID</option>
+                        </select>
+                        <button id="open_form">Thêm thuốc</button>
+                    </div>
+
+                    <div class="browse">
+                        <input type="search" placeholder="Search" class="record-search" />
+                        <select name="" id="">
+                            <option value="">Status</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <table width="100%" id="clientTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên dịch vụ</th>
+                                <th>Giá</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="service : ${services}">
+                                <td th:text="${service.id}">#</td>
+                                <td>
+                                    <div class="client">
+                                        <div class="client-info">
+                                            <h4 th:text="${service.name}">Tên thuốc</h4>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${#numbers.formatDecimal(service.price, 0, 'COMMA', 0, 'POINT') + ' đ'}">
+                                </td>
+
+                                <td>
+                                    <div class="actions">
+                                        <button class="btn-action btn-delete" th:data-id="${service.id}">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button class="btn-action btn-edit" th:data-id="${service.id}"
+                                            th:onclick="openEditForm([[${service.id}]])">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button id="prevBtn" class="disabled">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span id="pageNumber" class="page-number">Page 1</span>
+                    <button id="nextBtn">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="overlay"></div>
+            <!-- ADD -->
+            <div class="form_tool" id="formTool">
+                <div class="form_tool_main" id="formToolHeader">
+                    <div class="form_tool_name">
+                        <p>ADD</p>
+                        <button id="closeButton">X</button>
+                    </div>
+                    <div class="form_tool_content">
+                        <form id="serviceForm">
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Tên dịch vụ</p>
+                                    <input type="text" name="" id="serviceName" />
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Giá</p>
+                                    <input type="text" name="" id="servicePrice" />
+                                </div>
+                            </div>
+
+                            <div class="form_tool_btn">
+                                <button type="submit">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit -->
+            <div class="form_tool" id="formTool-edit">
+                <div class="form_tool_main" id="formToolHeader-edit">
+                    <div class="form_tool_name">
+                        <p>Edit</p>
+                        <button id="closeButtonedit">X</button>
+                    </div>
+                    <div class="form_tool_content">
+                        <form id="serviceEditForm">
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Mã</p>
+                                    <input type="text" name="" id="editServiceId" placeholder="111" disabled />
+                                </div>
+                            </div>
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Tên</p>
+                                    <input type="text" name="" id="editServiceName" />
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Giá</p>
+                                    <input type="text" name="" id="editServicePrice" />
+                                </div>
+                            </div>
+                            <div class="form_tool_btn">
+                                <button type="submit">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="js/services.js"></script>
+        <!-- Thêm -->
+        <script>
+            $(document).ready(function () {
+                $("#serviceForm").submit(function (e) {
+                    e.preventDefault();
+
+                    var serviceName = $("#serviceName").val();
+                    var servicePrice = $("#servicePrice").val();
+
+                    if (serviceName === "") {
+                        alert("Tên Dịch vụ không được để trống!");
+                        return;
+                    }
+
+                    if (servicePrice === "") {
+                        alert("Giá không được để trống!");
+                        return;
+                    }
+
+                    if (isNaN(servicePrice) || parseFloat(servicePrice) <= 0) {
+                        alert("Giá phải là một số hợp lệ và lớn hơn 0!");
+                        return;
+                    }
+
+                    var serviceData = {
+                        name: serviceName,
+                        price: parseFloat(servicePrice)
+                    };
+
+                    $.ajax({
+                        url: '/services/create',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(serviceData),
+                        success: function (response) {
+                            alert('Thêm Dịch vụ thành công!');
+                            location.reload();
+                        },
+                        error: function (error) {
+                            alert('Có lỗi xảy ra!');
+                        }
+                    });
+                });
+            });
+        </script>
+
+        <!-- Xóa -->
+        <script>
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function () {
+                    const serviceId = this.getAttribute('data-id');
+                    if (confirm('Bạn có chắc chắn muốn xóa Dịch vụ này?')) {
+                        fetch(`/services/delete/${serviceId}`, {
+                            method: 'DELETE',
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('Dịch vụ đã được xóa!');
+                                    location.reload();
+                                } else {
+                                    alert('Xóa Dịch vụ thất bại!');
+                                }
+                            })
+                            .catch(error => {
+                                alert('Có lỗi xảy ra!');
+                            });
+                    }
+                });
+            });
+        </script>
+
+        <!-- Edit -->
+        <script>
+            function openEditForm(serviceId) {
+                $.ajax({
+                    url: '/services/' + serviceId,
+                    type: 'GET',
+                    success: function (data) {
+                        $("#editServiceId").val(data.id);
+                        $("#editServiceName").val(data.name);
+                        $("#editServicePrice").val(data.price);
+                    },
+                    error: function () {
+                        alert("Không tìm thấy Dịch vụ!");
+                    }
+                });
+            }
+
+        </script>
+
+        <!-- update -->
+        <script>
+            $(document).ready(function () {
+                $("#serviceEditForm").submit(function (e) {
+                    e.preventDefault();
+
+                    var serviceId = $("#editServiceId").val();
+                    var serviceName = $("#editServiceName").val();
+                    var servicePrice = $("#editServicePrice").val();
+
+                    if (serviceName === "" || servicePrice === "" || isNaN(servicePrice) || parseFloat(servicePrice) <= 0) {
+                        alert("Vui lòng nhập thông tin hợp lệ!");
+                        return;
+                    }
+
+                    var serviceData = {
+                        id: serviceId,
+                        name: serviceName,
+                        price: parseFloat(servicePrice)
+                    };
+
+                    $.ajax({
+                        url: '/services/update/' + serviceId,
+                        type: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(serviceData),
+                        success: function () {
+                            alert("Cập nhật thành công!");
+                            location.reload();
+                        },
+                        error: function () {
+                            alert("Có lỗi xảy ra!");
+                        }
+                    });
+                });
+            });
+
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                const itemsPerPage = 6;
+                let currentPage = 1;
+                const totalRows = $("#clientTable tbody tr").length;
+                const totalPages = Math.ceil(totalRows / itemsPerPage);
+
+                function renderTable() {
+                    const tableRows = $("#clientTable tbody tr");
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+
+                    tableRows.hide().slice(start, end).show();
+
+                    // Hiển thị số trang
+                    $("#pageNumber").text(`Page ${currentPage} of ${totalPages}`);
+
+                    // Kiểm tra và hiển thị/ẩn nút phân trang
+                    $("#prevBtn").toggleClass("disabled", currentPage === 1);
+                    $("#nextBtn").toggleClass(
+                        "disabled",
+                        currentPage * itemsPerPage >= totalRows
+                    );
+                }
+
+                // Xử lý sự kiện phân trang
+                $("#prevBtn").click(function () {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderTable();
+                    }
+                });
+
+                $("#nextBtn").click(function () {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderTable();
+                    }
+                });
+
+                // Lần đầu hiển thị bảng
+                renderTable();
+            });
+        </script>
+    </main>
+</body>
+
+</html>

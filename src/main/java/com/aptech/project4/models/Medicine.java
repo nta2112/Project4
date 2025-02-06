@@ -40,4 +40,12 @@ public class Medicine {
     public void setPrice(Double price) {
         this.price = price;
     }
+
+    // @Override
+    // public String toString() {
+    //     return "Medicine{" +
+    //             "name='" + name + '\'' +
+    //             ", price=" + price +
+    //             '}';
+    // }
 }
