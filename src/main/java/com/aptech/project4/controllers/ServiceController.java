@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.aptech.project4.models.Medicine;
 import com.aptech.project4.models.Service;
 import com.aptech.project4.repositories.ServiceRepository;
 

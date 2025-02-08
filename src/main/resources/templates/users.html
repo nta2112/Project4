@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <link rel="stylesheet" href="css/users.css">
+</head>
+
+<body>
+
+    <main layout:fragment="content">
+
+        <div class="page-header">
+            <h1>Quản lý người dùng</h1>
+            <small>Home / Dashboard</small>
+        </div>
+
+        <div class="page-content">
+
+
+            <div class="records table-responsive">
+
+                <div class="record-header">
+                    <div class="add">
+                        <span>Entries</span>
+                        <select name="" id="">
+                            <option value="">ID</option>
+                        </select>
+                        <button id="open_form">Thêm người dùng</button>
+                    </div>
+
+                    <div class="browse">
+                        <input type="search" placeholder="Search" class="record-search">
+                        <select name="" id="">
+                            <option value="">Status</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <table width="100%" id="clientTable">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Tên</th>
+                                <th>Địa chỉ</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>vai trò</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user : ${users}">
+                                <td th:text="${user.id}"></td>
+                                <td>
+                                    <div class="client">
+                                        <div class="client-info">
+                                            <h4 th:text="${user.fullName}">MEMEF</h4>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${user.address}"></td>
+                                <td th:text="${user.username}"></td>
+                                <td th:text="${user.email}"></td>
+                                <td th:text="${user.phone}"></td>
+                                <td th:text="${user.role}"></td>
+                                <td>
+                                    <div class="actions">
+                                        <button class="btn-action btn-delete" th:data-id="${user.id}">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button class="btn-action btn-edit" th:data-id="${user.id}">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button id="prevBtn" class="disabled"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="pageNumber" class="page-number">Page 1</span>
+                    <button id="nextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+
+            </div>
+
+            <div id="overlay"></div>
+            <!-- ADD -->
+            <div class="form_tool" id="formTool">
+                <div class="form_tool_main" id="formToolHeader">
+                    <div class="form_tool_name">
+                        <p>Thêm</p>
+                        <button id="closeButton">X</button>
+                    </div>
+                    <div class="form_tool_content">
+                        <form id="userForm">
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Họ và tên</p>
+                                    <input type="text" name="fullName" id="fullName">
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Username</p>
+                                    <input type="text" name="username" id="username">
+                                </div>
+                            </div>
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Số điện thoại</p>
+                                    <input type="text" name="phone" id="phone">
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Mật khẩu</p>
+                                    <input type="password" name="password" id="password">
+                                </div>
+                            </div>
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Email</p>
+                                    <input type="email" name="email" id="email">
+                                </div>
+                                <div class="form_tool_card">
+                                    <p>Địa chỉ</p>
+                                    <input type="text" name="address" id="address">
+                                </div>
+                            </div>
+                            <div class="form_tool_list">
+                                <div class="form_tool_card">
+                                    <p>Vai trò</p>
+                                    <select name="role" id="role">
+                                        <option value="Quản trị">Quản trị</option>
+                                        <option value="Lễ tân">Lễ tân</option>
+                                        <option value="Bác sĩ">Bác sĩ</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form_tool_btn">
+                                <button type="submit">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit -->
+            <div class="form_tool" id="formTool-edit">
+                <div class="form_tool_main" id="formToolHeader-edit">
+                    <div class="form_tool_name">
+                        <p>Sửa</p>
+                        <button id="closeButtonedit">X</button>
+                    </div>
+                    <div class="form_tool_content">
+                        <form id="editUserForm">
+                            <div class="form_tool_all">
+                                <div class="form_tool_list_new">
+                                    <div class="add_slot">
+                                        <div id="slotInput">
+                                            <p>Thời gian làm việc</p>
+                                            <div class="input-group">
+
+                                                <!-- Dữ liệu mẫu -->
+                                                <div class="form_input" style="margin-top: 16px;">
+                                                    <input type="text" class="searchInput"
+                                                        placeholder="Nhập để tìm kiếm...">
+                                                    <input type="text" class="searchInput_option" placeholder="Chọn..."
+                                                        disabled>
+                                                    <button class="remove_input">Xóa</button>
+                                                </div>
+
+                                                <select class="dropdown" size="5">
+                                                    <option value="09:00 - 10:00">09:00 - 10:00</option>
+                                                    <option value="10:00 - 11:00">10:00 - 11:00</option>
+                                                </select>
+
+                                                <div class="form_input">
+                                                    <input type="text" class="searchInput"
+                                                        placeholder="Nhập để tìm kiếm...">
+                                                    <input type="text" class="searchInput_option" placeholder="Chọn..."
+                                                        disabled>
+                                                    <button class="remove_input">Xóa</button>
+                                                </div>
+
+                                                <select class="dropdown" size="5">
+                                                    <option value="09:00 - 10:00">09:00 - 10:00</option>
+                                                    <option value="10:00 - 11:00">10:00 - 11:00</option>
+                                                </select>
+
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="slot_action">
+                                            <span id="addInput">Thêm Thời gian làm việc <i
+                                                    class="fa-solid fa-plus"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form_tool_list_new">
+
+                                    <input type="hidden" id="editId">
+
+                                    <div class="form_tool_card">
+                                        <p>Họ và tên</p>
+                                        <input type="text" name="fullName" id="editFullName">
+                                    </div>
+                                    <div class="form_tool_card">
+                                        <p>Username</p>
+                                        <input type="text" name="username" id="editUsername">
+                                    </div>
+                                    <div class="form_tool_card">
+                                        <p>Số điện thoại</p>
+                                        <input type="text" name="phone" id="editPhone">
+                                    </div>
+                                    <div class="form_tool_card">
+                                        <p>Mật khẩu</p>
+                                        <input type="password" name="password" id="editPassword">
+                                    </div>
+                                    <div class="form_tool_card">
+                                        <p>Email</p>
+                                        <input type="email" name="email" id="editEmail">
+                                    </div>
+                                    <div class="form_tool_card">
+                                        <p>Địa chỉ</p>
+                                        <input type="text" name="address" id="editAddress">
+                                    </div>
+                                    <div class="form_tool_card">
+                                        <p>Vai trò</p>
+                                        <select name="role" id="editRole">
+                                            <option value="Quản trị">Quản trị</option>
+                                            <option value="Lễ tân">Lễ tân</option>
+                                            <option value="Bác sĩ">Bác sĩ</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form_tool_btn">
+                                <button type="submit">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="js/users.js"></script>
+        <script>
+            $(document).ready(function () {
+                const itemsPerPage = 6;
+                let currentPage = 1;
+                const totalRows = $('#clientTable tbody tr').length;
+                const totalPages = Math.ceil(totalRows / itemsPerPage);
+
+                function renderTable() {
+                    const tableRows = $('#clientTable tbody tr');
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+
+                    tableRows.hide().slice(start, end).show();
+
+                    // Hiển thị số trang
+                    $('#pageNumber').text(`Page ${currentPage} of ${totalPages}`);
+
+                    // Kiểm tra và hiển thị/ẩn nút phân trang
+                    $('#prevBtn').toggleClass('disabled', currentPage === 1);
+                    $('#nextBtn').toggleClass('disabled', currentPage * itemsPerPage >= totalRows);
+                }
+
+                // Xử lý sự kiện phân trang
+                $('#prevBtn').click(function () {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderTable();
+                    }
+                });
+
+                $('#nextBtn').click(function () {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderTable();
+                    }
+                });
+
+                // Lần đầu hiển thị bảng
+                renderTable();
+            });
+        </script>
+
+        <!-- Thêm -->
+        <script>
+            $(document).ready(function () {
+                $("#userForm").submit(function (e) {
+                    e.preventDefault();
+
+                    var fullName = $("#fullName").val();
+                    var username = $("#username").val();
+                    var phone = $("#phone").val();
+                    var password = $("#password").val();
+                    var email = $("#email").val();
+                    var address = $("#address").val();
+                    var role = $("#role").val();
+
+                    // Kiểm tra dữ liệu đầu vào
+                    if (fullName === "") {
+                        alert("Họ và tên không được để trống!");
+                        return;
+                    }
+
+                    if (username === "") {
+                        alert("Username không được để trống!");
+                        return;
+                    }
+
+                    if (phone === "") {
+                        alert("Số điện thoại không được để trống!");
+                        return;
+                    }
+
+                    if (password === "") {
+                        alert("Mật khẩu không được để trống!");
+                        return;
+                    }
+
+                    if (email === "") {
+                        alert("Email không được để trống!");
+                        return;
+                    }
+
+                    if (address === "") {
+                        alert("Địa chỉ không được để trống!");
+                        return;
+                    }
+
+                    var userData = {
+                        fullName: fullName,
+                        username: username,
+                        phone: phone,
+                        password: password,
+                        email: email,
+                        address: address,
+                        role: role
+                    };
+
+                    // Gửi dữ liệu tới server
+                    $.ajax({
+                        url: '/users/create',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(userData),
+                        success: function (response) {
+                            alert('Thêm người dùng thành công!');
+                            location.reload();
+                        },
+                        error: function (error) {
+                            alert('Có lỗi xảy ra!');
+                        }
+                    });
+                });
+            });
+        </script>
+
+        <!-- Xóa -->
+        <script>
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function () {
+                    const userId = this.getAttribute('data-id');
+                    if (confirm('Bạn có chắc chắn muốn xóa Người dùng này?')) {
+                        fetch(`/users/delete/${userId}`, {
+                            method: 'DELETE',
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('Người dùng đã được xóa!');
+                                    location.reload();
+                                } else {
+                                    alert('Xóa Người dùng thất bại!');
+                                }
+                            })
+                            .catch(error => {
+                                alert('Có lỗi xảy ra!');
+                            });
+                    }
+                });
+            });
+        </script>
+
+        <!-- Edit -->
+        <script>
+            $(document).ready(function () {
+                var userId;
+                $('.btn-edit').on('click', function () {
+                    userId = $(this).data('id');
+                    $.ajax({
+                        url: `/users/edit/${userId}`,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.user) {
+                                const user = data.user;
+                                const slots = data.slots;
+                                const shifts = data.shifts;
+
+                                $('#editFullName').val(user.fullName);
+                                $('#editUsername').val(user.username);
+                                $('#editPhone').val(user.phone);
+                                $('#editPassword').val('');
+                                $('#editEmail').val(user.email);
+                                $('#editAddress').val(user.address);
+                                $('#editRole').val(user.role);
+                                $('#editId').val(user.id);
+
+                                $('.input-group').html("");
+
+                                shifts.forEach(function (shift, index) {
+                                    const slotDiv = `
+                                        <div class="form_input" style="margin-top: 16px;">
+                                            <input type="text" class="searchInput"
+                                                placeholder="Nhập để tìm kiếm..." value="${shift.slot.timeSlot}">
+                                            <input type="text" class="searchInput_option" placeholder="Chọn..." disabled value="${shift.slot.timeSlot}">
+                                            <button class="remove_input">Xóa</button>
+                                            <select class="dropdown" size="5" style="display:none;">
+                                                ${slots.map(slot => `
+                                                    <option value="${slot.id}" ${slot.id === shift.slot.id ? 'selected' : ''}>
+                                                        ${slot.timeSlot}
+                                                    </option>
+                                                `).join('')}
+                                            </select>
+                                        </div>
+                                    `;
+                                    $('.input-group').append(slotDiv);
+                                });
+
+                                $('#formTool-edit').show();
+
+
+                            } else {
+                                alert(data.message || 'Có lỗi xảy ra');
+                            }
+
+
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                            alert('Có lỗi xảy ra khi lấy thông tin.');
+                        }
+                    });
+                });
+
+                $(document).on('input', '.searchInput', function () {
+                    const input = $(this);
+                    const dropdown = input.closest('.form_input').find('.dropdown');
+                    const searchText = input.val().toLowerCase();
+
+                    dropdown.find('option').each(function () {
+                        const optionText = $(this).text().toLowerCase();
+                        if (optionText.includes(searchText)) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+
+                    dropdown.show();
+                });
+
+                $(document).on('click', '.searchInput', function (e) {
+                    const input = $(this);
+                    const dropdown = input.closest('.form_input').find('.dropdown');
+                    dropdown.show();
+                });
+
+                $(document).on('click', function (e) {
+                    if (!$(e.target).closest('.searchInput').length) {
+                        $('.dropdown').hide();
+                    }
+                });
+
+                $(document).on('change', '.dropdown', function () {
+                    const selectedOption = $(this).find('option:selected');
+                    const selectedText = selectedOption.text();
+                    const inputOption = $(this).closest('.form_input').find('.searchInput_option');
+                    inputOption.val(selectedText.trim());
+                    $(this).hide();
+                    $(this).closest('.form_input').find('.searchInput').val("");
+                });
+
+                $(document).on('click', '.remove_input', function () {
+                    $(this).closest('.form_input').remove();
+                    $(this).closest('.form_input').next('.dropdown').remove();
+                });
+
+                $('#addInput').on('click', function () {
+                    const slots = [];
+                    $.ajax({
+                        url: `/users/edit/${userId}`,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            const slots = data.slots;
+                            const slotDiv = `
+                                <div class="form_input" style="margin-top: 16px;">
+                                    <input type="text" class="searchInput"
+                                        placeholder="Nhập để tìm kiếm...">
+                                    <input type="text" class="searchInput_option" placeholder="Chọn..." disabled>
+                                    <button class="remove_input">Xóa</button>
+                                    <select class="dropdown" size="5" style="display:none;">
+                                        ${slots.map(slot => `
+                                            <option value="${slot.id}">
+                                                ${slot.timeSlot}
+                                            </option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+                            `;
+                            $('.input-group').append(slotDiv);
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                            alert('Có lỗi xảy ra khi lấy dữ liệu slots.');
+                        }
+                    });
+                });
+            });
+
+        </script>
+
+        <!-- update -->
+        <script>
+            $(document).ready(function () {
+                $('#editUserForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    const fullName = $('#editFullName').val();
+                    const username = $('#editUsername').val();
+                    const phone = $('#editPhone').val();
+                    const password = $('#editPassword').val();
+                    const email = $('#editEmail').val();
+                    const address = $('#editAddress').val();
+                    const role = $('#editRole').val();
+
+                    const slotIds = [];
+                    $('.form_input').each(function () {
+                        const selectedSlotId = $(this).find('.dropdown').val();
+                        if (selectedSlotId) {
+                            slotIds.push(selectedSlotId);
+                        }
+                    });
+
+                    const userData = {
+                        fullName: fullName,
+                        username: username,
+                        phone: phone,
+                        password: password,
+                        email: email,
+                        address: address,
+                        role: role,
+                        slotIds: slotIds
+                    };
+
+
+                    var userId = $('#editId').val();
+                    console.log(userId);
+                    
+                    // Gửi dữ liệu tới backend để cập nhật
+                    $.ajax({
+                        url: `/users/edit/${userId}`,
+                        type: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(userData),
+                        success: function (data) {
+                            alert('Cập nhật thành công!');
+                            location.reload();
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                            alert('Có lỗi xảy ra khi cập nhật.');
+                        }
+                    });
+                });
+            });
+
+        </script>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <link rel="stylesheet" href="css/slots.css">
+</head>
+
+<body>
+
+    <main layout:fragment="content">
+
+        <div class="page-header">
+            <h1>Quản lý thời gian làm việc</h1>
+            <small>Home / Dashboard</small>
+        </div>
+
+        <div class="page-content">
+
+
+            <div class="records table-responsive">
+                <div class="add_slot">
+                    <form action="">
+                        <div class="slot_input" id="slotInput">
+                            <div th:each="slot : ${slots}" class="slot_child">
+                                <input class="input_field" type="text" th:value="${slot.timeSlot}">
+                                <span class="remove_input">Xóa</span>
+                            </div>
+                            <div class="slot_child" id="template" style="display: none;">
+                                <input class="input_field" type="text" placeholder="Nhập.....">
+                                <span class="remove_input">Xóa</span>
+                            </div>
+                        </div>
+
+                        <div class="slot_action">
+                            <span id="addInput">Thêm input <i class="fa-solid fa-plus"></i></span>
+                            <button id="submitSlot" type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="js/slots.js"></script>
+        <script>
+            $(document).ready(function () {
+                const itemsPerPage = 6;
+                let currentPage = 1;
+                const totalRows = $('#clientTable tbody tr').length;
+                const totalPages = Math.ceil(totalRows / itemsPerPage);
+
+                function renderTable() {
+                    const tableRows = $('#clientTable tbody tr');
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+
+                    tableRows.hide().slice(start, end).show();
+
+                    // Hiển thị số trang
+                    $('#pageNumber').text(`Page ${currentPage} of ${totalPages}`);
+
+                    // Kiểm tra và hiển thị/ẩn nút phân trang
+                    $('#prevBtn').toggleClass('disabled', currentPage === 1);
+                    $('#nextBtn').toggleClass('disabled', currentPage * itemsPerPage >= totalRows);
+                }
+
+                // Xử lý sự kiện phân trang
+                $('#prevBtn').click(function () {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderTable();
+                    }
+                });
+
+                $('#nextBtn').click(function () {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderTable();
+                    }
+                });
+
+                // Lần đầu hiển thị bảng
+                renderTable();
+            });
+        </script>
+
+        <script>
+            document.getElementById("submitSlot").addEventListener("click", function (event) {
+                event.preventDefault();
+
+                let slots = [];
+                document.querySelectorAll(".input_field").forEach(input => {
+                    if (input.value.trim() !== "") {
+                        slots.push({ timeSlot: input.value });
+                    }
+                });
+
+                fetch("/slots/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(slots)
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        alert(data);
+                        location.reload();
+                    })
+                    .catch(error => console.error("Lỗi:", error));
+            });
+
+        </script>
+    </main>
+
+</body>
+
+</html>
