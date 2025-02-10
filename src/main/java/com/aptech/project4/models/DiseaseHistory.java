@@ -1,5 +1,8 @@
 package com.aptech.project4.models;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 // import java.util.*;
 
 import jakarta.persistence.*;
@@ -15,6 +18,7 @@ public class DiseaseHistory {
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Patient patient;
 
     private String description;

@@ -1,5 +1,8 @@
 package com.aptech.project4.models;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 // import java.util.*;
 
 import jakarta.persistence.*;
@@ -15,6 +18,7 @@ public class Invoice {
 
     @ManyToOne
     @JoinColumn(name = "ticket_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Ticket ticket;
 
     private String status;

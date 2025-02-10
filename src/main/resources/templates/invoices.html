@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <link rel="stylesheet" href="css/invoices.css">
+</head>
+
+<body>
+    <main layout:fragment="content">
+
+        <div class="page-header">
+            <h1>Quản lý hóa đơn</h1>
+            <small>Home / Dashboard</small>
+        </div>
+
+        <div class="page-content">
+
+
+            <div class="records table-responsive">
+
+                <div class="record-header">
+                    <div class="add">
+                        <span>Entries</span>
+                        <select name="" id="">
+                            <option value="">ID</option>
+                        </select>
+                    </div>
+
+                    <div class="browse">
+                        <input type="search" placeholder="Search" class="record-search">
+                        <select name="" id="">
+                            <option value="">Status</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <table width="100%" id="clientTable">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên bệnh nhân</th>
+                                <th>Số điện thoại bệnh nhân</th>
+                                <th>Mã phiếu khám</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="invoice : ${invoices}">
+                                <td th:text="${invoice.id}"></td>
+                                <td th:text="${invoice.ticket.patient.fullName}"></td>
+                                <td th:text="${invoice.ticket.patient.phone}"></td>
+                                <td th:text="${invoice.ticket.id}"></td>
+                                <td
+                                    th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 0, 'POINT') + ' đ'}">
+                                <td th:text="${invoice.status}"></td>
+                                <td>
+                                    <div class="actions">
+                                        <button th:data-id="${invoice.id}" class="btn-action btn-see"><i
+                                                class="fa-solid fa-eye"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button id="prevBtn" class="disabled"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="pageNumber" class="page-number">Page 1</span>
+                    <button id="nextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+
+            </div>
+
+            <div id="overlay"></div>
+
+            <!-- See -->
+            <div class="form_tool" id="formTool">
+                <div class="form_tool_main" id="formToolHeader">
+                    <div class="form_tool_name" id="formToolHeader">
+                        <p>THÔNG TIN</p>
+                        <button id="closeButton">X</button>
+                    </div>
+                    <div class="form_tool_content">
+                        <form action="" class="form_tool_form">
+                            <div class="form_tool_list">
+                                <div class="form_tool_list_item">
+                                    <span>Đơn thuốc</span>
+                                    <div class="status-container">
+                                        <span class="trang-thai">Chưa thanh toán</span>
+                                        <span class="btn-toggle-status">Chuyển trạng thái</span>
+                                    </div>
+                                </div>
+                                <div class="prescription-container">
+                                    <table class="prescription-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Mã</th>
+                                                <th>Tên</th>
+                                                <th>Giá</th>
+                                                <th>Số lượng</th>
+                                                <th>Thành tiền</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Dữ liệu mẫu -->
+                                            <tr>
+                                                <td>#111</td>
+                                                <td>Thuốc kích thích</td>
+                                                <td>1000000 VND</td>
+                                                <td>3</td>
+                                                <td>3000000 VND</td>
+                                            </tr>
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div>
+                                    <p>Tiền thuốc: <span>3000000</span></p>
+                                </div>
+                            </div>
+                            <div class="form_tool_select">
+                                <div class="form_tool_list_item">
+                                    <span>Dịch vụ</span>
+                                    <div class="status-container">
+                                        <span class="trang-thai-dv">Đã thanh toán</span>
+                                        <span class="btn-toggle-status-dv">Chuyển trạng thái</span>
+                                    </div>
+                                </div>
+                                <div class="prescription-container">
+                                    <table class="prescription-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Mã</th>
+                                                <th>Tên</th>
+                                                <th>Giá</th>
+                                                <th>Số lượng</th>
+                                                <th>Thành tiền</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>#111</td>
+                                                <td>Dịch vụ nội soi</td>
+                                                <td>3000000 VND</td>
+                                                <td>3</td>
+                                                <td>9000000 VND</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div>
+                                    <p>Tiền dịch vụ: <span>9000000</span></p>
+                                </div>
+                            </div>
+                            <div class="tong-tien">
+                                <div>
+                                    <p>Tổng tiền: <span>12000000</span></p>
+                                </div>
+                                <button>Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="js/invoices.js"></script>
+        <script>
+            $(document).ready(function () {
+                const itemsPerPage = 6;
+                let currentPage = 1;
+                const totalRows = $('#clientTable tbody tr').length;
+                const totalPages = Math.ceil(totalRows / itemsPerPage);
+
+                function renderTable() {
+                    const tableRows = $('#clientTable tbody tr');
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+
+                    tableRows.hide().slice(start, end).show();
+
+                    // Hiển thị số trang
+                    $('#pageNumber').text(`Page ${currentPage} of ${totalPages}`);
+
+                    // Kiểm tra và hiển thị/ẩn nút phân trang
+                    $('#prevBtn').toggleClass('disabled', currentPage === 1);
+                    $('#nextBtn').toggleClass('disabled', currentPage * itemsPerPage >= totalRows);
+                }
+
+                // Xử lý sự kiện phân trang
+                $('#prevBtn').click(function () {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderTable();
+                    }
+                });
+
+                $('#nextBtn').click(function () {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderTable();
+                    }
+                });
+
+                // Lần đầu hiển thị bảng
+                renderTable();
+            });
+        </script>
+
+        <!-- Xem chi tiết hóa đơn -->
+        <script>
+            // Khi click vào nút "Xem"
+            document.querySelectorAll('.btn-see').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var invoiceId = this.getAttribute('data-id'); // Lấy invoiceId từ data-id của button
+
+                    // Gửi yêu cầu AJAX để lấy thông tin chi tiết hóa đơn
+                    fetch('/invoice/details/' + invoiceId)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Xử lý dữ liệu trả về và cập nhật giao diện
+                            updateInvoiceDetails(data);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching invoice details:', error);
+                        });
+                });
+            });
+
+            function updateInvoiceDetails(data) {
+                // Lọc danh sách thuốc và dịch vụ từ dữ liệu trả về
+                const medicines = data.medicines;
+                const services = data.services;
+
+                // Định dạng tiền tệ VND
+                const currencyFormat = new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                });
+
+                // Cập nhật bảng "Đơn thuốc"
+                const medicineTableBody = document.querySelector('.prescription-table tbody');
+                medicineTableBody.innerHTML = ''; // Xóa dữ liệu cũ
+
+                medicines.forEach(function (medicine) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>#${medicine.id}</td>
+                        <td>${medicine.medicine.name}</td>
+                        <td>${currencyFormat.format(medicine.medicine.price)}</td>
+                        <td>${medicine.quantity}</td>
+                        <td>${currencyFormat.format(medicine.medicine.price * medicine.quantity)}</td>
+                    `;
+                    medicineTableBody.appendChild(row);
+                });
+
+                // Cập nhật tổng tiền thuốc
+                const totalMedicine = medicines.reduce(function (sum, medicine) {
+                    return sum + (medicine.medicine.price * medicine.quantity);
+                }, 0);
+
+                document.querySelector('.form_tool_list .prescription-container + div span').textContent = currencyFormat.format(totalMedicine);
+
+                // Cập nhật bảng "Dịch vụ"
+                const serviceTableBody = document.querySelectorAll('.prescription-table')[1].querySelector('tbody');
+                serviceTableBody.innerHTML = ''; // Xóa dữ liệu cũ
+
+                services.forEach(function (service) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>#${service.id}</td>
+                        <td>${service.service.name}</td>
+                        <td>${currencyFormat.format(service.service.price)}</td>
+                        <td>${service.quantity}</td>
+                        <td>${currencyFormat.format(service.service.price * service.quantity)}</td>
+                    `;
+                    serviceTableBody.appendChild(row);
+                });
+
+                // Cập nhật tổng tiền dịch vụ
+                const totalService = services.reduce(function (sum, service) {
+                    return sum + (service.service.price * service.quantity);
+                }, 0);
+                document.querySelector('.form_tool_select .prescription-container + div span').textContent = currencyFormat.format(totalService);
+
+                // Cập nhật tổng tiền
+                const totalAmount = totalMedicine + totalService;
+                document.querySelector('.tong-tien span').textContent = currencyFormat.format(totalAmount);
+            }
+        </script>
+
+    </main>
+</body>
+
+</html>

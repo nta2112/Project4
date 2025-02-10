@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <link rel="stylesheet" href="css/appointments.css">
+</head>
+
+<body>
+    <main layout:fragment="content">
+
+        <div class="page-header">
+            <h1>Quản lý lịch hẹn</h1>
+            <small>Home / Dashboard</small>
+        </div>
+
+        <div class="page-content">
+
+
+            <div class="records table-responsive">
+
+                <div class="record-header">
+                    <div class="add">
+                        <span>Entries</span>
+                        <select name="" id="">
+                            <option value="">ID</option>
+                        </select>
+                        <button id="open_form">Thêm lịch hẹn</button>
+                    </div>
+
+                    <div class="browse">
+                        <input type="search" placeholder="Search" class="record-search">
+                        <select name="" id="">
+                            <option value="">Status</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="alert" th:if="${message}" th:text="${message}"
+                    style="background-color: #4CAF50; color: white; padding: 15px; margin-bottom: 20px;"></div>
+
+                <div>
+                    <table width="100%" id="clientTable">
+                        <thead>
+                            <tr>
+                                <th>Mã lịch hẹn</th>
+                                <th>Mã phiếu khám</th>
+                                <th>Tên bệnh nhân</th>
+                                <th>Số điện thoại bệnh nhân</th>
+                                <th>Giờ hẹn</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="appointment : ${appointments}">
+                                <td th:text="${appointment.id}"></td>
+                                <td th:text="${appointment.ticket.id}"></td>
+                                <td th:text="${appointment.ticket.patient.fullName}"></td>
+                                <td th:text="${appointment.ticket.patient.phone}"></td>
+                                <td th:text="${appointment.shift.slot.timeSlot}"></td>
+                                <td>
+                                    <div class="actions">
+                                        <button class="btn-action btn-delete" th:data-id="${appointment.id}">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button class="btn-action btn-edit" th:data-id="${appointment.id}"><i
+                                                class="fa-solid fa-pen"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button id="prevBtn" class="disabled"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="pageNumber" class="page-number">Page 1</span>
+                    <button id="nextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+
+            </div>
+
+            <div id="overlay"></div>
+            <!-- ADD -->
+            <div class="form_tool" id="formTool">
+                <div class="form_tool_main" id="formToolHeader">
+                    <div class="form_tool_name">
+                        <p>Thêm</p>
+                        <button id="closeButton">X</button>
+                    </div>
+                    <div class="form_tool_content">
+                        <form id="addAppointment" th:action="@{/appointments/add}" method="post"
+                            onsubmit="return validateForm()">
+
+                            <div class="form_tool_select">
+                                <div class="form_tool_select_item">
+                                    <div class="input-group">
+                                        <p>Tên lễ tân</p>
+                                        <div class="form_input">
+                                            <input type="text" class="searchInput" placeholder="Nhập để tìm kiếm...">
+                                            <input type="text" class="searchInput_option" placeholder="Chọn..."
+                                                disabled>
+                                        </div>
+                                        <select name="receptionistId" class="dropdown" size="3">
+                                            <option value="" disabled selected>Chọn lễ tân</option>
+                                            <th:block th:each="receptionist : ${receptionists}">
+                                                <option th:value="${receptionist.id}"
+                                                    th:text="${receptionist.fullName}"></option>
+                                            </th:block>
+                                        </select>
+
+                                    </div>
+
+                                    <div class="input-group">
+                                        <p>Mã phiếu khám</p>
+                                        <div class="form_input">
+                                            <input type="text" class="searchInput" placeholder="Nhập để tìm kiếm...">
+                                            <input type="text" class="searchInput_option" placeholder="Chọn..."
+                                                disabled>
+                                        </div>
+                                        <select name="ticketId" class="dropdown" size="3">
+                                            <option value="" disabled selected>Chọn phiếu khám</option>
+                                            <th:block th:each="ticket : ${tickets}">
+                                                <option th:value="${ticket.id}" th:text="${ticket.id}"></option>
+                                            </th:block>
+                                        </select>
+
+                                    </div>
+
+                                    <div class="input-group">
+                                        <p>Tên bác sỹ</p>
+                                        <div class="form_input">
+                                            <input type="text" class="searchInput" placeholder="Nhập để tìm kiếm...">
+                                            <input type="text" class="searchInput_option" placeholder="Chọn.." disabled>
+                                        </div>
+                                        <select name="doctorId" class="dropdown" size="3">
+                                            <option value="" disabled selected>Chọn Bác sĩ</option>
+                                            <th:block th:each="doctor : ${doctors}">
+                                                <option th:value="${doctor.id}" th:text="${doctor.fullName}"></option>
+                                            </th:block>
+                                        </select>
+
+                                    </div>
+
+                                    <div class="input-group">
+                                        <p>Ca trực của bác sỹ</p>
+                                        <div class="form_input">
+                                            <input type="text" class="searchInput" placeholder="Nhập để tìm kiếm...">
+                                            <input type="text" class="searchInput_option" placeholder="Chọn..."
+                                                disabled>
+                                        </div>
+                                        <select name="slotId" class="dropdown" size="3">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_tool_btn">
+                                <button type="submit">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Edit -->
+            <div class="form_tool" id="formTool-edit">
+                <div class="form_tool_main" id="formToolHeader-edit">
+                    <div class="form_tool_name">
+                        <p>Sửa</p>
+                        <button id="closeButtonedit">X</button>
+                    </div>
+                    <div class="form_tool_content">
+                        <form id="updateAppointmentForm" th:action="@{/appointments/update}" method="post"
+                            onsubmit="return validateUpdateForm()">
+                            <input type="hidden" id="appointmentId" name="appointmentId" value="" />
+
+                            <div class="form_tool_select">
+                                <div class="form_tool_select_item">
+                                    <div class="input-group">
+                                        <p>Tên lễ tân</p>
+                                        <div class="form_input">
+                                            <input type="text" class="searchInput" placeholder="Nhập để tìm kiếm...">
+                                            <input type="text" class="searchInput_option" placeholder="Chọn..."
+                                                disabled>
+                                        </div>
+                                        <select id="editReceptionist" name="receptionistId" class="dropdown" size="3">
+                                            <option value="" disabled selected>Chọn lễ tân</option>
+                                            <th:block th:each="receptionist : ${receptionists}">
+                                                <option th:value="${receptionist.id}"
+                                                    th:text="${receptionist.fullName}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <p>Mã phiếu khám</p>
+                                        <div class="form_input">
+                                            <input type="text" class="searchInput" placeholder="Nhập để tìm kiếm...">
+                                            <input type="text" class="searchInput_option" placeholder="Chọn..."
+                                                disabled>
+                                        </div>
+                                        <select id="editTicket" name="ticketId" class="dropdown" size="3">
+                                            <option value="" disabled selected>Chọn phiếu khám</option>
+                                            <th:block th:each="ticket : ${tickets}">
+                                                <option th:value="${ticket.id}" th:text="${ticket.id}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <p>Tên bác sỹ</p>
+                                        <div class="form_input">
+                                            <input type="text" class="searchInput" placeholder="Nhập để tìm kiếm...">
+                                            <input type="text" class="searchInput_option" placeholder="Chọn.." disabled>
+                                        </div>
+                                        <select id="editDoctor" name="doctorId" class="dropdown" size="3">
+                                            <option value="" disabled selected>Chọn Bác sĩ</option>
+                                            <th:block th:each="doctor : ${doctors}">
+                                                <option th:value="${doctor.id}" th:text="${doctor.fullName}"></option>
+                                            </th:block>
+                                        </select>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <p>Ca trực của bác sỹ</p>
+                                        <div class="form_input">
+                                            <input type="text" class="searchInput" placeholder="Nhập để tìm kiếm...">
+                                            <input type="text" class="searchInput_option" placeholder="Chọn..."
+                                                disabled>
+                                        </div>
+                                        <select id="editSlot" name="slotId" class="dropdown" size="3">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_tool_btn">
+                                <button type="submit">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="js/appointments.js"></script>
+        <script>
+            $(document).ready(function () {
+                const itemsPerPage = 6;
+                let currentPage = 1;
+                const totalRows = $('#clientTable tbody tr').length;
+                const totalPages = Math.ceil(totalRows / itemsPerPage);
+
+                function renderTable() {
+                    const tableRows = $('#clientTable tbody tr');
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+
+                    tableRows.hide().slice(start, end).show();
+
+                    // Hiển thị số trang
+                    $('#pageNumber').text(`Page ${currentPage} of ${totalPages}`);
+
+                    // Kiểm tra và hiển thị/ẩn nút phân trang
+                    $('#prevBtn').toggleClass('disabled', currentPage === 1);
+                    $('#nextBtn').toggleClass('disabled', currentPage * itemsPerPage >= totalRows);
+                }
+
+                // Xử lý sự kiện phân trang
+                $('#prevBtn').click(function () {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderTable();
+                    }
+                });
+
+                $('#nextBtn').click(function () {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderTable();
+                    }
+                });
+
+                // Lần đầu hiển thị bảng
+                renderTable();
+            });
+        </script>
+
+        <!-- hiển thị ca làm vc khi chọn bác sĩ -->
+        <script>
+            $(document).ready(function () {
+                $('select[name="doctorId"]').change(function () {
+                    var doctorId = $(this).val();
+
+                    if (doctorId) {
+                        $.ajax({
+                            url: '/slots-by-doctor/' + doctorId,
+                            type: 'GET',
+                            success: function (data) {
+                                $('select[name="slotId"]').empty();
+                                $('select[name="slotId"]').append('<option value="" disabled selected>Chọn ca trực</option>');
+
+                                data.forEach(function (slot) {
+                                    $('select[name="slotId"]').append(
+                                        '<option value="' + slot.id + '">' + slot.timeSlot + '</option>'
+                                    );
+                                });
+                            },
+                            error: function () {
+                                alert('Không thể lấy ca trực');
+                            }
+                        });
+                    } else {
+                        $('select[name="slotId"]').empty();
+                        $('select[name="slotId"]').append('<option value="" disabled selected>Chọn ca trực</option>');
+                    }
+                });
+            });
+        </script>
+
+        <!-- Kiểm tra nhập đủ thông tin khi add -->
+        <script>
+            // Hàm kiểm tra form
+            function validateForm() {
+                var receptionistId = document.querySelector('select[name="receptionistId"]').value;
+                var ticketId = document.querySelector('select[name="ticketId"]').value;
+                var doctorId = document.querySelector('select[name="doctorId"]').value;
+                var slotId = document.querySelector('select[name="slotId"]').value;
+
+                if (!receptionistId || !ticketId || !doctorId || !slotId) {
+                    alert("Vui lòng điền đầy đủ thông tin!");
+                    return false; // Ngừng gửi form
+                }
+
+                return true; // Gửi form nếu tất cả các trường hợp hợp lệ
+            }
+
+        </script>
+
+        <!-- Xóa -->
+        <script>
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function () {
+                    const serviceId = this.getAttribute('data-id');
+                    if (confirm('Bạn có chắc chắn muốn xóa lịch hẹn này?')) {
+                        fetch(`/appointments/delete/${serviceId}`, {
+                            method: 'DELETE',
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('lịch hẹn đã được xóa!');
+                                    location.reload();
+                                } else {
+                                    alert('Xóa lịch hẹn thất bại!');
+                                }
+                            })
+                            .catch(error => {
+                                alert('Có lỗi xảy ra!');
+                            });
+                    }
+                });
+            });
+        </script>
+
+        <!-- edit -->
+        <script>
+            $(document).ready(function () {
+                $(document).on('click', '.btn-edit', function () {
+                    var appointmentId = $(this).data('id');
+                    $('#appointmentId').val(appointmentId);
+                    $.ajax({
+                        url: '/appointments/edit/' + appointmentId,
+                        type: 'GET',
+                        success: function (data) {
+                            $('#editReceptionist').val(data.receptionist.id);
+                            $('#editTicket').val(data.ticket.id);
+                            $('#editDoctor').val(data.shift.doctor.id);
+
+                            $('#editReceptionist').closest('.input-group').find('.searchInput_option').val(data.receptionist.fullName);
+                            $('#editTicket').closest('.input-group').find('.searchInput_option').val(data.ticket.id);
+                            $('#editDoctor').closest('.input-group').find('.searchInput_option').val(data.shift.doctor.fullName);
+
+                            if (data.shift.doctor.id) {
+                                $.ajax({
+                                    url: '/slots-by-doctor/' + data.shift.doctor.id,
+                                    type: 'GET',
+                                    success: function (slotData) {
+                                        // Clear and populate slots
+                                        $('#editSlot').empty();
+                                        $('#editSlot').append('<option value="" disabled selected>Chọn ca trực</option>');
+
+                                        slotData.forEach(function (slot) {
+                                            $('#editSlot').append(
+                                                '<option value="' + slot.id + '">' + slot.timeSlot + '</option>'
+                                            );
+                                        });
+
+                                        // Now that the slots are appended, set the selected slot
+                                        $('#editSlot').val(data.shift.slot.id);
+
+                                        // Set the value for the searchInput_option related to Slot
+                                        $('#editSlot').closest('.input-group').find('.searchInput_option').val(data.shift.slot.timeSlot);
+                                    },
+                                    error: function () {
+                                        alert('Không thể lấy ca trực');
+                                    }
+                                });
+                            }
+
+                        },
+                        error: function () {
+                            alert('Không thể lấy thông tin lịch hẹn');
+                        }
+                    });
+                });
+            });
+
+
+        </script>
+
+        <!-- Kiểm tra nhập đủ thông tin khi edit -->
+        <script>
+            function validateUpdateForm() {
+                var receptionistId = $('#editReceptionist').val();
+                var ticketId = $('#editTicket').val();
+                var doctorId = $('#editDoctor').val();
+                var slotId = $('#editSlot').val();
+
+                // Kiểm tra các trường xem có được chọn chưa
+                if (!receptionistId || !ticketId || !doctorId || !slotId) {
+                    alert("Vui lòng điền đầy đủ thông tin!");
+                    return false; // Ngừng gửi form nếu có trường trống
+                }
+
+                return true; // Gửi form nếu tất cả các trường hợp hợp lệ
+            }
+
+        </script>
+
+
+
+    </main>
+
+
+</body>
+
+</html>

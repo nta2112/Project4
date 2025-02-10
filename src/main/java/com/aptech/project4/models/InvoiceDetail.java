@@ -1,5 +1,8 @@
 package com.aptech.project4.models;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 // import java.util.*;
 
 import jakarta.persistence.*;
@@ -15,14 +18,17 @@ public class InvoiceDetail {
 
     @ManyToOne
     @JoinColumn(name = "invoice_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Invoice invoice;
 
     @ManyToOne
     @JoinColumn(name = "medicine_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Medicine medicine;
 
     @ManyToOne
     @JoinColumn(name = "service_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Service service;
 
     private Integer quantity;

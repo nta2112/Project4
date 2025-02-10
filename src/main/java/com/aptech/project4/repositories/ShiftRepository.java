@@ -22,4 +22,10 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
 
     // Phương thức custom để xóa các ca trực của bác sĩ
     void deleteByDoctor(User doctor);
+
+    // Tìm các shift của bác sĩ theo doctorId
+    List<Shift> findByDoctorId(Long doctorId);
+
+    // Phương thức tìm Shift theo doctorId và slotId
+    Shift findByDoctorIdAndSlotId(Long doctorId, Long slotId);
 }

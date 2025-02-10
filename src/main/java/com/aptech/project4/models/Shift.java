@@ -1,5 +1,8 @@
 package com.aptech.project4.models;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 // import java.util.*;
 
 import jakarta.persistence.*;
@@ -15,10 +18,12 @@ public class Shift {
 
     @ManyToOne
     @JoinColumn(name = "doctor_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User doctor;
 
     @ManyToOne
     @JoinColumn(name = "slot_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Slot slot;
 
     // Getters and Setters

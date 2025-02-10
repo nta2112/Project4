@@ -1,5 +1,8 @@
 package com.aptech.project4.models;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 // import java.util.*;
 
 import jakarta.persistence.*;
@@ -15,14 +18,17 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "receptionist_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User receptionist;
 
     @ManyToOne
     @JoinColumn(name = "ticket_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Ticket ticket;
 
     @ManyToOne
     @JoinColumn(name = "shift_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Shift shift;
 
     // Getters and Setters
